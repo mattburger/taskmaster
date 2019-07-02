@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>View Tasks</title>
+</head>
+<body>
+    <h1>View Tasks</h1>
+    <ul>
+        <li th:each="task : ${tasks}">
+            <a th:href="@{/tasks/{id}(id=${task.getId()})}">
+                <span th:text="${task.getTitle()}"></span>
+            </a>
+             (<span th:text="${task.getDescription()}"></span>,
+            <span th:text="${task.getStatus()}"></span>)
+        </li>
+    </ul>
+
+    <form action="/tasks" method="POST" id="postform">
+        <input name="title" id="title" />
+        <input name="description" id="description" />
+        <input type="submit" />
+    </form>
+
+</body>
+</html>

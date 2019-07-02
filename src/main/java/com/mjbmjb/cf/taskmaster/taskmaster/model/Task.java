@@ -15,13 +15,16 @@ public class Task {
     private String description;
     private String status;
     private String[] statusState = new String[]{"Available", "Assigned", "Accepted", "Finished"};
+    private int statusTracker;
 
     public Task(){}
 
-    public Task(String title, String description, String status){
+    public Task(String title, String description){
         this.title = title;
         this.description = description;
-        this. status = status;
+        this.statusTracker = 0;
+        this. status = statusState[this.statusTracker];
+
     }
 
     //getters
@@ -46,6 +49,14 @@ public class Task {
         return this.status;
     }
 
+    public String[] getStatusState() {
+        return this.statusState;
+    }
+
+    public int getStatusTracker() {
+        return this.statusTracker;
+    }
+
     //setters
     public void setId(UUID id) {
         this.id = id;
@@ -61,6 +72,10 @@ public class Task {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setStatusTracker(int value) {
+        this.statusTracker = value;
     }
 
 }
