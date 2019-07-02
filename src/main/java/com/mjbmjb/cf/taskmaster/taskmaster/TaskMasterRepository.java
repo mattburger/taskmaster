@@ -1,16 +1,14 @@
 package com.mjbmjb.cf.taskmaster.taskmaster;
 
-import com.mjbmjb.cf.taskmaster.taskmaster.model.Task;
+import com.mjbmjb.cf.taskmaster.taskmaster.model.TaskMaster;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @EnableScan
-public interface TaskRepository extends CrudRepository<Task, String> {
+public interface TaskMasterRepository extends CrudRepository<TaskMaster, String> {
 
-    Optional<Task> findById(UUID id);
-    List<Task> findByAllByTitle(String title);
+    Optional<TaskMaster> findById(UUID id);
 }

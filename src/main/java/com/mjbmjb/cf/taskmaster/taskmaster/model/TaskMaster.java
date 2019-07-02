@@ -7,8 +7,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.util.UUID;
 
-@DynamoDBTable(tableName = "Task")
-public class Task {
+@DynamoDBTable(tableName = "taskmaster")
+public class TaskMaster {
 
     private UUID id;
     private String title;
@@ -17,9 +17,9 @@ public class Task {
     private String[] statusState = new String[]{"Available", "Assigned", "Accepted", "Finished"};
     private int statusTracker;
 
-    public Task(){}
+    public TaskMaster(){}
 
-    public Task(String title, String description){
+    public TaskMaster(String title, String description){
         this.title = title;
         this.description = description;
         this.statusTracker = 0;

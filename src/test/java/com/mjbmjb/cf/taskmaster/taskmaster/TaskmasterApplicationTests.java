@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.mjbmjb.cf.taskmaster.taskmaster.model.Task;
+import com.mjbmjb.cf.taskmaster.taskmaster.model.TaskMaster;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +18,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 //import static org.graalvm.compiler.phases.common.DeadCodeEliminationPhase.Optionality.Optional;
 import static org.junit.Assert.*;
@@ -40,7 +39,7 @@ public class TaskmasterApplicationTests {
 	private AmazonDynamoDB amazonDynamoDB;
 
 	@Autowired
-	TaskRepository taskRepository;
+	TaskMasterRepository taskMasterRepository;
 
 
 	@Before
@@ -48,12 +47,12 @@ public class TaskmasterApplicationTests {
 		dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
 
 		CreateTableRequest tableRequest = dynamoDBMapper
-				.generateCreateTableRequest(Task.class);
+				.generateCreateTableRequest(TaskMaster.class);
 		tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
 		amazonDynamoDB.createTable(tableRequest);
 
 		dynamoDBMapper.batchDelete(
-				taskRepository.findAll());
+				taskMasterRepository.findAll());
 
 	}
 
@@ -63,12 +62,12 @@ public class TaskmasterApplicationTests {
 
 	@Test
 	public void sampleCase() {
-		Task newTask = new Task("Setup Time", "Setup repo on GitHub", "Available");
-		taskRepository.save(newTask);
+		TaskMaster newTaskMaster = new TaskMaster("Setup Time", "Setup repo on GitHub");
+		taskMasterRepository.save(newTaskMaster);
 
-		Iterable<Task> result = taskRepository.findAll();
-		Iterator<Task> iterator = result.iterator();
-		List<Task> daResults = new ArrayList<>();
+		Iterable<TaskMaster> result = taskMasterRepository.findAll();
+		Iterator<TaskMaster> iterator = result.iterator();
+		List<TaskMaster> daResults = new ArrayList<>();
 		while(iterator.hasNext()) {
 			daResults.add(iterator.next());
 		}

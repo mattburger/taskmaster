@@ -1,7 +1,7 @@
 package com.mjbmjb.cf.taskmaster.taskmaster.controller;
 
-import com.mjbmjb.cf.taskmaster.taskmaster.TaskRepository;
-import com.mjbmjb.cf.taskmaster.taskmaster.model.Task;
+import com.mjbmjb.cf.taskmaster.taskmaster.TaskMasterRepository;
+import com.mjbmjb.cf.taskmaster.taskmaster.model.TaskMaster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +16,7 @@ import java.util.*;
 public class TaskController {
 
     @Autowired
-    TaskRepository taskRepository;
+    TaskMasterRepository taskMasterRepository;
 
     @GetMapping("/")
     public String getRootPath() {
@@ -25,15 +25,15 @@ public class TaskController {
 
     @GetMapping("/tasks")
     public String getTasks(Model m) {
-        Iterable<Task> tasks = taskRepository.findAll();
+        Iterable<TaskMaster> tasks = taskMasterRepository.findAll();
         m.addAttribute("tasks", tasks);
         return "viewTasks";
     }
 
     @PostMapping("/tasks")
     public RedirectView createTasks(String title, String description) {
-        Task newTask = new Task(title, description);
-        taskRepository.save(newTask);
+        TaskMaster newTaskMaster = new TaskMaster(title, description);
+        taskMasterRepository.save(newTaskMaster);
 
         return new RedirectView("/tasks");
     }
@@ -41,19 +41,20 @@ public class TaskController {
     @GetMapping("/tasks/{id}")
     public String viewSpecificTask(@PathVariable UUID id, Model m) {
 
-        Optional<Task> current = taskRepository.findById(id);
-        Task taskToUpdate = current.get();
-        m.addAttribute("task", taskToUpdate);
+        Optional<TaskMaster> current = taskMasterRepository.findById(id);
+        TaskMaster taskMasterToUpdate = current.get();
+        m.addAttribute("task", taskMasterToUpdate);
         return "updateTaskStatus";
     }
 
     @PostMapping("/tasks/{id}")
     public RedirectView updateSpecificTask(@PathVariable UUID id, Model m) {
-        Optional<Task> current = taskRepository.findById(id);
-        Task currentTask = current.get();
-        if(currentTask.getStatusTracker() != currentTask.getStatusState().length) {
-            currentTask.setStatusTracker(currentTask.getStatusTracker() + 1);
-            currentTask.setStatus(currentTask.getStatusState()[currentTask.getStatusTracker()]);
+        Optional<TaskMaster> current = taskMasterRepository.findById(id);
+        TaskMaster currentTaskMaster = current.get();
+        if(currentTaskMaster.getStatusTracker() != currentTaskMaster.getStatusState().length) {
+            currentTaskMaster.setStatusTracker(currentTaskMaster.getStatusTracker() + 1);
+            currentTaskMaster.setStatus(currentTaskMaster.getStatusState()[currentTaskMaster.getStatusTracker()]);
+            taskMasterRepository.save(currentTaskMaster);
         }
 
         return new RedirectView("/tasks");
