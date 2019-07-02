@@ -22,59 +22,7 @@ import java.util.List;
 //import static org.graalvm.compiler.phases.common.DeadCodeEliminationPhase.Optionality.Optional;
 import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@WebAppConfiguration
-@ActiveProfiles("local")
-@TestPropertySource( properties = {
-		"amazon.dynamodb.endpoint=http://localhost:8000/",
-		// not real keys
-		"amazon.aws.accesskey=test1",
-		"amazon.aws.secretkey=test231"
-})
-public class TaskmasterApplicationTests {
-
-	private DynamoDBMapper dynamoDBMapper;
-
-	@Autowired
-	private AmazonDynamoDB amazonDynamoDB;
-
-	@Autowired
-	TaskMasterRepository taskMasterRepository;
-
-
-	@Before
-	public void setup() {
-		dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
-
-		CreateTableRequest tableRequest = dynamoDBMapper
-				.generateCreateTableRequest(TaskMaster.class);
-		tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
-		amazonDynamoDB.createTable(tableRequest);
-
-		dynamoDBMapper.batchDelete(
-				taskMasterRepository.findAll());
-
-	}
-
-	@Test
-	public void contextLoads() {
-	}
-
-	@Test
-	public void sampleCase() {
-		TaskMaster newTaskMaster = new TaskMaster("Setup Time", "Setup repo on GitHub");
-		taskMasterRepository.save(newTaskMaster);
-
-		Iterable<TaskMaster> result = taskMasterRepository.findAll();
-		Iterator<TaskMaster> iterator = result.iterator();
-		List<TaskMaster> daResults = new ArrayList<>();
-		while(iterator.hasNext()) {
-			daResults.add(iterator.next());
-		}
-		assertTrue("Not empty", daResults.size() > 0);
-		assertTrue("Contains item with expected cost",
-				daResults.get(0).getStatus().equals("Available"));
-	}
-
-}
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
+//@WebAppConfiguration
+//@ActiveProfiles("local")
