@@ -28,6 +28,7 @@ import static org.junit.Assert.*;
 @ActiveProfiles("local")
 @TestPropertySource( properties = {
 		"amazon.dynamodb.endpoint=http://localhost:8000/",
+		// not real keys
 		"amazon.aws.accesskey=test1",
 		"amazon.aws.secretkey=test231"
 })
