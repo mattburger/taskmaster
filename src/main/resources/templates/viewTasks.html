@@ -9,7 +9,7 @@
     <ul>
         <li th:each="task : ${tasks}">
             <a th:href="@{/tasks/{id}(id=${task.getId()})}">
-                <span th:text="${task.getTitle()}"></span>
+                <span th:text="${task.getId()}"></span>
             </a>
              (<span th:text="${task.getDescription()}"></span>,
             <span th:text="${task.getStatus()}"></span>)
