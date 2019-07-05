@@ -2,6 +2,10 @@ package com.mjbmjb.cf.taskmaster.taskmaster.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @DynamoDBTable(tableName = "taskmaster")
 public class TaskMaster {
 
@@ -9,14 +13,24 @@ public class TaskMaster {
     private String title;
     private String description;
     private String status;
+    private String assignee;
     private int statusTracker;
+//    private List<String> availableStatus = new ArrayList<>(Arrays.asList("Available", "Assigned", "Accepted", "Finished"));
+
+
 
     public TaskMaster(){}
 
-    public TaskMaster(String title, String description){
+    public TaskMaster(String title, String description, String assignee){
         this.title = title;
         this.description = description;
-        this.statusTracker = 0;
+        this.assignee = assignee;
+//        if(assignee == null) {
+//            this.statusTracker = 0;
+//        } else {
+//            this.statusTracker = 1;
+//        }
+//        this.status = this.availableStatus.get(this.statusTracker);
     }
 
     //getters
@@ -46,6 +60,16 @@ public class TaskMaster {
         return this.statusTracker;
     }
 
+    @DynamoDBAttribute
+    public String getAssignee() {
+        return this.assignee;
+    }
+//
+//    @DynamoDBAttribute
+//    public List<String> getAvailableStatus() {
+//        return this.availableStatus;
+//    }
+
     //setters
     public void setId(String id) {
         this.id = id;
@@ -65,5 +89,9 @@ public class TaskMaster {
 
     public void setStatusTracker(int statusTracker) {
         this.statusTracker = statusTracker;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
     }
 }

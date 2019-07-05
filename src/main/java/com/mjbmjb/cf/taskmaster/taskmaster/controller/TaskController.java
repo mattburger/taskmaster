@@ -3,6 +3,8 @@ package com.mjbmjb.cf.taskmaster.taskmaster.controller;
 import com.mjbmjb.cf.taskmaster.taskmaster.TaskMasterRepository;
 import com.mjbmjb.cf.taskmaster.taskmaster.model.TaskMaster;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ public class TaskController {
     @Autowired
     TaskMasterRepository taskMasterRepository;
 
+    String[] statusState = new String[]{"Available", "Assigned", "Accepted", "Finished"};
+
+
     @GetMapping("/")
     public @ResponseBody
     String getRootPath() {
@@ -28,67 +33,55 @@ public class TaskController {
     }
 
     @PostMapping("/tasks")
-    public RedirectView createTask(@RequestParam String title, String description) {
-        TaskMaster newTask = new TaskMaster(title, description);
+    public RedirectView createTask(@RequestParam String title, String description, String assignee) {
+        TaskMaster newTask = new TaskMaster(title, description, assignee);
+        if( !assignee.isEmpty() ) { //isBlank() doesn't want to work here
+            newTask.setStatusTracker(1);
+            newTask.setStatus(statusState[1]);
+        } else {
+            newTask.setStatusTracker(0);
+            newTask.setStatus(statusState[0]);
+        }
         taskMasterRepository.save(newTask);
         return new RedirectView("/tasks");
     }
 
     @PostMapping("/tasks/{id}")
     public RedirectView updateStatus(@RequestParam String id) {
-        String[] statusState = new String[]{"Available", "Assigned", "Accepted", "Finished"};
         Optional<TaskMaster> current = taskMasterRepository.findById(id);
         TaskMaster currentTaskMaster = current.get();
 
-        if(currentTaskMaster.getStatusTracker() != statusState.length) {
-            currentTaskMaster.setStatusTracker(currentTaskMaster.getStatusTracker() + 1);
-            currentTaskMaster.setStatus(statusState[currentTaskMaster.getStatusTracker()]);
+        if(currentTaskMaster.getStatusTracker() != statusState.length ) {
+            currentTaskMaster.setStatusTracker( currentTaskMaster.getStatusTracker() + 1 );
+            currentTaskMaster.setStatus( statusState[currentTaskMaster.getStatusTracker()] );
             taskMasterRepository.save(currentTaskMaster);
         }
 
         return new RedirectView("/tasks");
 
     }
-// for future form use
-//    @GetMapping("/")
-//    public String getRootPath() {
-//        return "helloWorld";
-//    }
 
-//    @GetMapping("/tasks")
-//    public String getTasks(Model m) {
-//        Iterable<TaskMaster> tasks = taskMasterRepository.findAll();
-//        m.addAttribute("tasks", tasks);
-//        return "viewTasks";
-//    }
-//
-//    @PostMapping("/tasks")
-//    public RedirectView createTasks(String title, String description) {
-//        TaskMaster newTaskMaster = new TaskMaster(title, description);
-//        taskMasterRepository.save(newTaskMaster);
-//
-//        return new RedirectView("/tasks");
-//    }
+    @GetMapping("/users/{name}/tasks")
+    public List<TaskMaster> getTaskByUser(@PathVariable String name) {
+        return (List) taskMasterRepository.findByAssignee(name);
+    }
 
-//    @GetMapping("/tasks/{id}")
-//    public String viewSpecificTask(@PathVariable String id, Model m) {
-//
-//        Optional<TaskMaster> current = taskMasterRepository.findById(id);
-//        TaskMaster taskMasterToUpdate = current.get();
-//        m.addAttribute("task", taskMasterToUpdate);
-//        return "updateTaskStatus";
-//    }
+    @PostMapping("/tasks/{id}/assign/{assignee}")
+    public RedirectView assignUserToTask(@RequestParam String id, @RequestParam String assignee) {
+        Optional<TaskMaster> current = taskMasterRepository.findById(id);
 
-//    @PostMapping("/tasks/{id}")
-//    public RedirectView updateSpecificTask(@PathVariable String id, Model m) {
-//        Optional<TaskMaster> current = taskMasterRepository.findById(id);
-//        TaskMaster currentTaskMaster = current.get();
-//        if(currentTaskMaster.getStatusTracker() != currentTaskMaster.getStatusState().length) {
-//            currentTaskMaster.setStatusTracker(currentTaskMaster.getStatusTracker() + 1);
-//            currentTaskMaster.setStatus(currentTaskMaster.getStatusState()[currentTaskMaster.getStatusTracker()]);
-//            taskMasterRepository.save(currentTaskMaster);
-//        }
-//
-//        return new RedirectView("/tasks");
-//    }
+        if(!current.isPresent()) {
+            throw new IllegalStateException("Cannot change assignee of task that doesn't exist.");
+        }
+        TaskMaster currentTaskMaster = current.get();
+
+        currentTaskMaster.setAssignee(assignee);
+        currentTaskMaster.setStatusTracker(1);
+        currentTaskMaster.setStatus(statusState[1]);
+
+        taskMasterRepository.save(currentTaskMaster);
+
+        return new RedirectView("/tasks");
+    }
+
 }
