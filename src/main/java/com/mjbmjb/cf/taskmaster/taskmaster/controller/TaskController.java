@@ -3,6 +3,8 @@ package com.mjbmjb.cf.taskmaster.taskmaster.controller;
 import com.mjbmjb.cf.taskmaster.taskmaster.TaskMasterRepository;
 import com.mjbmjb.cf.taskmaster.taskmaster.model.TaskMaster;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +64,24 @@ public class TaskController {
     @GetMapping("/users/{name}/tasks")
     public List<TaskMaster> getTaskByUser(@PathVariable String name) {
         return (List) taskMasterRepository.findByAssignee(name);
+    }
+
+    @PostMapping("/tasks/{id}/assign/{assignee}")
+    public RedirectView assignUserToTask(@RequestParam String id, @RequestParam String assignee) {
+        Optional<TaskMaster> current = taskMasterRepository.findById(id);
+
+        if(!current.isPresent()) {
+            throw new IllegalStateException("Cannot change assignee of task that doesn't exist.");
+        }
+        TaskMaster currentTaskMaster = current.get();
+
+        currentTaskMaster.setAssignee(assignee);
+        currentTaskMaster.setStatusTracker(1);
+        currentTaskMaster.setStatus(statusState[1]);
+
+        taskMasterRepository.save(currentTaskMaster);
+
+        return new RedirectView("/tasks");
     }
 
 }
