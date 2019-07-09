@@ -16,6 +16,11 @@ public class TaskController {
     private S3Client s3Client;
 
     @Autowired
+    TaskController(S3Client s3Client) {
+        this.s3Client = s3Client;
+    }
+
+    @Autowired
     TaskMasterRepository taskMasterRepository;
 
     String[] statusState = new String[]{"Available", "Assigned", "Accepted", "Finished"};

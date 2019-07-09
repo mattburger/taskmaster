@@ -36,7 +36,6 @@ public class S3Client {
     @Value("${amazon.aws.bucket}")
     private String bucket;
 
-
     @PostConstruct
     private void initializeAmazon() {
         AWSCredentials credentials = new BasicAWSCredentials(this.accessKey, this.secretKey);
