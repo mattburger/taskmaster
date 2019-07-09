@@ -1,4 +1,4 @@
-package com.mjbmjb.cf.taskmaster.taskmaster;
+package com.mjbmjb.cf.taskmaster.taskmaster.respository;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;

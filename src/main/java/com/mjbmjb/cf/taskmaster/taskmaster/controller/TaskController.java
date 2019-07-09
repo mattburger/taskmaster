@@ -1,19 +1,19 @@
 package com.mjbmjb.cf.taskmaster.taskmaster.controller;
 
-import com.mjbmjb.cf.taskmaster.taskmaster.TaskMasterRepository;
+import com.mjbmjb.cf.taskmaster.taskmaster.respository.S3Client;
+import com.mjbmjb.cf.taskmaster.taskmaster.respository.TaskMasterRepository;
 import com.mjbmjb.cf.taskmaster.taskmaster.model.TaskMaster;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.*;
 
 @RestController
 public class TaskController {
+
+    private S3Client s3Client;
 
     @Autowired
     TaskMasterRepository taskMasterRepository;
@@ -27,11 +27,13 @@ public class TaskController {
         return "Hello, from the world of tomorrow!";
     }
 
+    @CrossOrigin
     @GetMapping("/tasks")
     public List<TaskMaster> getTasks() {
         return (List) taskMasterRepository.findAll();
     }
 
+    @CrossOrigin
     @PostMapping("/tasks")
     public RedirectView createTask(@RequestParam String title, String description, String assignee) {
         TaskMaster newTask = new TaskMaster(title, description, assignee);
@@ -46,6 +48,16 @@ public class TaskController {
         return new RedirectView("/tasks");
     }
 
+    @CrossOrigin
+    @GetMapping("/tasks/{id}")
+    public TaskMaster getSingleTask(@RequestParam String id) {
+        Optional<TaskMaster> tm = taskMasterRepository.findById(id);
+        TaskMaster currentTm = tm.get();
+
+        return  currentTm;
+    }
+
+    @CrossOrigin
     @PostMapping("/tasks/{id}")
     public RedirectView updateStatus(@RequestParam String id) {
         Optional<TaskMaster> current = taskMasterRepository.findById(id);
@@ -61,11 +73,29 @@ public class TaskController {
 
     }
 
+    @CrossOrigin
+    @PostMapping("/tasks/{id}/images")
+    public RedirectView uploadImage(
+            @RequestParam String id,
+            @RequestPart(value = "file") MultipartFile file
+    ) {
+        Optional<TaskMaster> current = taskMasterRepository.findById(id);
+        TaskMaster currentTaskMaster = current.get();
+        String pic = this.s3Client.uploadFile(file);
+
+        currentTaskMaster.setPicture(pic);
+        taskMasterRepository.save(currentTaskMaster);
+
+        return new RedirectView("http://localhost:3000");
+    }
+
+    @CrossOrigin
     @GetMapping("/users/{name}/tasks")
     public List<TaskMaster> getTaskByUser(@PathVariable String name) {
         return (List) taskMasterRepository.findByAssignee(name);
     }
 
+    @CrossOrigin
     @PostMapping("/tasks/{id}/assign/{assignee}")
     public RedirectView assignUserToTask(@RequestParam String id, @RequestParam String assignee) {
         Optional<TaskMaster> current = taskMasterRepository.findById(id);
