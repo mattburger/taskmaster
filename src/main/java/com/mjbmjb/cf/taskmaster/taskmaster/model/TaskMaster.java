@@ -2,10 +2,6 @@ package com.mjbmjb.cf.taskmaster.taskmaster.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @DynamoDBTable(tableName = "taskmaster")
 public class TaskMaster {
 
@@ -15,9 +11,7 @@ public class TaskMaster {
     private String status;
     private String assignee;
     private int statusTracker;
-//    private List<String> availableStatus = new ArrayList<>(Arrays.asList("Available", "Assigned", "Accepted", "Finished"));
-
-
+    private String picture;
 
     public TaskMaster(){}
 
@@ -25,12 +19,6 @@ public class TaskMaster {
         this.title = title;
         this.description = description;
         this.assignee = assignee;
-//        if(assignee == null) {
-//            this.statusTracker = 0;
-//        } else {
-//            this.statusTracker = 1;
-//        }
-//        this.status = this.availableStatus.get(this.statusTracker);
     }
 
     //getters
@@ -64,11 +52,11 @@ public class TaskMaster {
     public String getAssignee() {
         return this.assignee;
     }
-//
-//    @DynamoDBAttribute
-//    public List<String> getAvailableStatus() {
-//        return this.availableStatus;
-//    }
+
+    @DynamoDBAttribute
+    public String getPicture() {
+        return this.picture;
+    }
 
     //setters
     public void setId(String id) {
@@ -94,4 +82,9 @@ public class TaskMaster {
     public void setAssignee(String assignee) {
         this.assignee = assignee;
     }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
 }

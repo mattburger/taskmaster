@@ -1,4 +1,4 @@
-package com.mjbmjb.cf.taskmaster.taskmaster;
+package com.mjbmjb.cf.taskmaster.taskmaster.respository;
 
 import com.mjbmjb.cf.taskmaster.taskmaster.model.TaskMaster;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
