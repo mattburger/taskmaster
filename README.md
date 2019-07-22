@@ -41,5 +41,16 @@ task-tracking application with the same basic goal as Trello: allow users to kee
 
 ### Lab 39
 #### Overview
+For this assignment, we will be wiring up our Queues with live running cloud based code, creating a distributed, event driven architecture.
 
+#### Features
+- Using queues and notifications
+  - Send an email to an administrator when a task is completed
+  - Send a text to the person to whom a task is assigned (when it gets assigned)
+  - When a task is deleted from Dynamo, trigger a message that will fire a lambda to remove any images associated to it from S3
+  - Instead of having S3 run the resizer automatically on upload, evaluate the size of the image in your Java code and then send a message to a Q, that will in turn trigger the lambda resizer -- only when the image > 350k
+
+#### Email result
 ![SNS_email](https://github.com/mattburger/taskmaster/tree/master/src/main/resources/snsEmail.png)
+#### SMS result
+![SNS_email](https://github.com/mattburger/taskmaster/tree/master/src/main/resources/snsSms.png)
