@@ -80,10 +80,9 @@ public class TaskController {
         } else {
             AmazonSNS snsClient = AmazonSNSClientBuilder.defaultClient();
 
-            String topicArn = ("${AWS_TOPIC_ARN}");
             String msg = "Task id: " + id + " is complete.";
 
-            PublishRequest publishRequest =  new PublishRequest(topicArn, msg);
+            PublishRequest publishRequest =  new PublishRequest(System.getenv("AWS_TOPIC_ARN"), msg);
             PublishResult publishResult = snsClient.publish(publishRequest);
         }
 
@@ -140,7 +139,7 @@ public class TaskController {
 
         taskMasterRepository.save(currentTaskMaster);
 
-        
+
 
         return new RedirectView("/tasks");
     }
