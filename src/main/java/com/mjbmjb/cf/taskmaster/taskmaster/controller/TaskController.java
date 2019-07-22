@@ -1,9 +1,14 @@
 package com.mjbmjb.cf.taskmaster.taskmaster.controller;
 
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
 import com.mjbmjb.cf.taskmaster.taskmaster.respository.S3Client;
 import com.mjbmjb.cf.taskmaster.taskmaster.respository.TaskMasterRepository;
 import com.mjbmjb.cf.taskmaster.taskmaster.model.TaskMaster;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
@@ -40,8 +45,8 @@ public class TaskController {
 
     @CrossOrigin
     @PostMapping("/tasks")
-    public RedirectView createTask(@RequestParam String title, String description, String assignee) {
-        TaskMaster newTask = new TaskMaster(title, description, assignee);
+    public RedirectView createTask(@RequestParam String title, String description, String assignee, String phoneNumber) {
+        TaskMaster newTask = new TaskMaster(title, description, assignee, phoneNumber);
         if( !assignee.isEmpty() ) { //isBlank() doesn't want to work here
             newTask.setStatusTracker(1);
             newTask.setStatus(statusState[1]);
@@ -68,14 +73,33 @@ public class TaskController {
         Optional<TaskMaster> current = taskMasterRepository.findById(id);
         TaskMaster currentTaskMaster = current.get();
 
-        if(currentTaskMaster.getStatusTracker() != statusState.length ) {
+        if(currentTaskMaster.getStatusTracker() < statusState.length - 1 ) {
             currentTaskMaster.setStatusTracker( currentTaskMaster.getStatusTracker() + 1 );
             currentTaskMaster.setStatus( statusState[currentTaskMaster.getStatusTracker()] );
             taskMasterRepository.save(currentTaskMaster);
+        } else {
+            AmazonSNS snsClient = AmazonSNSClientBuilder.defaultClient();
+
+            String topicArn = ("${AWS_TOPIC_ARN}");
+            String msg = "Task id: " + id + " is complete.";
+
+            PublishRequest publishRequest =  new PublishRequest(topicArn, msg);
+            PublishResult publishResult = snsClient.publish(publishRequest);
         }
 
         return new RedirectView("/tasks");
 
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/tasks/{id}")
+    public RedirectView deleteTask(@RequestParam String id) {
+        Optional<TaskMaster> current = taskMasterRepository.findById(id);
+        TaskMaster taskToDelete = current.get();
+
+        taskMasterRepository.delete(taskToDelete);
+
+        return new RedirectView("/tasks");
     }
 
     @CrossOrigin
@@ -115,6 +139,8 @@ public class TaskController {
         currentTaskMaster.setStatus(statusState[1]);
 
         taskMasterRepository.save(currentTaskMaster);
+
+        
 
         return new RedirectView("/tasks");
     }

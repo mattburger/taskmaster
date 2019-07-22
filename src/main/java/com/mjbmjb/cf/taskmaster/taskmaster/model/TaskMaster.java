@@ -12,13 +12,15 @@ public class TaskMaster {
     private String assignee;
     private int statusTracker;
     private String picture;
+    private String phoneNumber;
 
     public TaskMaster(){}
 
-    public TaskMaster(String title, String description, String assignee){
+    public TaskMaster(String title, String description, String assignee, String phoneNumber){
         this.title = title;
         this.description = description;
         this.assignee = assignee;
+        this.phoneNumber = phoneNumber;
     }
 
     //getters
@@ -58,6 +60,12 @@ public class TaskMaster {
         return this.picture;
     }
 
+    @DynamoDBAttribute
+    public String getPhoneNumber() {
+        return this.phoneNumber;
+    }
+
+
     //setters
     public void setId(String id) {
         this.id = id;
@@ -87,4 +95,7 @@ public class TaskMaster {
         this.picture = picture;
     }
 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }
