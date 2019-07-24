@@ -28,4 +28,7 @@ dependencies {
 	compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.585'
 
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sns
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.11.595'
 }
